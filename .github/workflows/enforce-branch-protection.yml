@@ -5,6 +5,7 @@ on:
     branches:
       - pprd
       - main
+      - quality
 
 jobs:
   validate-source-branch:
