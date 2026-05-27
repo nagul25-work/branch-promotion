@@ -1,0 +1,36 @@
+name: Enforce Branch Promotion Order
+
+on:
+  pull_request:
+    branches:
+      - pprd
+      - main
+
+jobs:
+  validate-source-branch:
+    name: Validate Source Branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Allow all PRs into quality
+        if: github.base_ref == 'quality'
+        run: echo "✅ PRs into quality are unrestricted."
+
+      - name: Check PR target is pprd → only allow source from quality
+        if: github.base_ref == 'pprd'
+        run: |
+          echo "Target: pprd | Source: ${{ github.head_ref }}"
+          if [ "${{ github.head_ref }}" != "quality" ]; then
+            echo "❌ PRs to 'pprd' are only allowed from 'quality'."
+            exit 1
+          fi
+          echo "✅ Source is 'quality'. Allowed."
+
+      - name: Check PR target is main → only allow source from pprd
+        if: github.base_ref == 'main'
+        run: |
+          echo "Target: main | Source: ${{ github.head_ref }}"
+          if [ "${{ github.head_ref }}" != "pprd" ]; then
+            echo "❌ PRs to 'main' are only allowed from 'pprd'."
+            exit 1
+          fi
+          echo "✅ Source is 'pprd'. Allowed."
