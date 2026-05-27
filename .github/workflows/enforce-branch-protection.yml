@@ -11,6 +11,10 @@ jobs:
     name: Validate Source Branch
     runs-on: ubuntu-latest
     steps:
+      - name: Allow all PRs into quality
+        if: github.base_ref == 'quality'
+        run: echo "✅ PRs into quality are unrestricted."
+
       - name: Check PR target is pprd → only allow source from quality
         if: github.base_ref == 'pprd'
         run: |
